@@ -19,8 +19,18 @@ def generate_random_document() -> dict:
     """
     document = {
         'UUID': str(uuid.uuid4()),  # Generate a version 4 UUID as a string
-        'name': 'John Doe',
-        'age': 30,
-        'email': 'johndoe@example.com'
+        'name': 'Bryson Ruff',
+        'age': 20,
+        'email': 'bfirst86@gmail.com'
     }
     return document
+
+def save_document(document: dict) -> str:
+    """Save the document to MongoDB
+    Args:
+        dict: The MongoDB document to save
+    Returns:
+        str: The UUID 
+    """
+    result = collection.insert_one(document)
+    return document['UUID']  # Return the UUID of the saved document
