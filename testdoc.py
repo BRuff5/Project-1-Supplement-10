@@ -1,20 +1,22 @@
 import pytest
 from unittest.mock import MagicMock
-
-from main import find_document_by_uuid, generate_random_document, save_document
-
+from main import (
+    generate_random_document,
+    save_document,
+    find_document_by_uuid,
+    update_document_field,
+)
 
 @pytest.fixture
 def mock_collection():
     """Fixture for mocking MongoDB collection."""
-    mock = MagicMock()
-    return mock
+    return MagicMock()
 
 def test_generate_random_document():
     """Test the generate_random_document function."""
     document = generate_random_document()
 
-    # Check if the document has the correct structure
+    # Validate document structure
     assert 'UUID' in document
     assert 'name' in document
     assert 'age' in document
@@ -28,17 +30,16 @@ def test_generate_random_document():
 
 def test_save_document(mock_collection):
     """Test the save_document function."""
-    # Mock insertion
-    mock_collection.insert_one = MagicMock(return_value=None)
+    mock_collection.insert_one = MagicMock()
 
-    # Generate and save document
+    # Generate a document and save it
     document = generate_random_document()
     result = save_document(document)
 
-    # Validate the UUID is returned
+    # Validate UUID is returned
     assert result == document['UUID']
 
-    # Assert the insert_one method was called with the document
+    # Validate the document was inserted
     mock_collection.insert_one.assert_called_once_with(document)
 
 def test_find_document_by_uuid(mock_collection):
@@ -46,15 +47,34 @@ def test_find_document_by_uuid(mock_collection):
     # Create a mock document
     document = generate_random_document()
 
-    # Mock the find_one method to return the document
+    # Mock the find_one method
     mock_collection.find_one = MagicMock(return_value=document)
 
     # Retrieve the document by UUID
     result = find_document_by_uuid(document['UUID'])
 
-    # Validate the retrieved document matches the expected document
+    # Validate the retrieved document
     assert result == document
 
-    # Assert find_one was called with the correct query
+    # Validate the query
     mock_collection.find_one.assert_called_once_with({'UUID': document['UUID']})
 
+def test_update_document_field(mock_collection):
+    """Test the update_document_field function."""
+    uuid = "test-uuid"
+    field = "name"
+    value = "Updated Name"
+
+    # Mock the update_one method
+    mock_collection.update_one = MagicMock(return_value=MagicMock(modified_count=1))
+
+    # Perform the update
+    result = update_document_field(uuid, field, value)
+
+    # Validate the update result
+    assert result is True
+
+    # Validate the update query
+    mock_collection.update_one.assert_called_once_with(
+        {'UUID': uuid}, {'$set': {field: value}}
+    )

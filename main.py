@@ -43,3 +43,18 @@ def find_document_by_uuid(uuid: str) -> dict:
         dict: the document found
     """
     return collection.find_one({'UUID': uuid}) 
+
+def update_document_field(uuid: str, field: str, value) -> bool:
+    """Update the field based of UUID
+    Args:
+        uuid (str): The UUID
+        field (str): The field to update
+        value: The new value for the specified field.
+    Returns:
+        bool: True if a document was updated; False otherwise.
+    """
+    result = collection.update_one(
+        {'UUID': uuid},
+        {'$set': {field: value}}
+    )
+    return result.modified_count > 0  # Return True if document was updated
