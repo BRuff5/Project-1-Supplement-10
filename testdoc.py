@@ -5,6 +5,7 @@ from main import (
     save_document,
     find_document_by_uuid,
     update_document_field,
+    delete_document_by_uuid,
 )
 
 @pytest.fixture
@@ -78,3 +79,19 @@ def test_update_document_field(mock_collection):
     mock_collection.update_one.assert_called_once_with(
         {'UUID': uuid}, {'$set': {field: value}}
     )
+
+def test_delete_document_by_uuid(mock_collection):
+    """Test the delete_document_by_uuid function."""
+    uuid = "test-uuid"
+
+    # Mock the delete_one method
+    mock_collection.delete_one = MagicMock(return_value=MagicMock(deleted_count=1))
+
+    # Perform the deletion
+    result = delete_document_by_uuid(uuid)
+
+    # Validate the delete result
+    assert result is True
+
+    # Validate the delete query
+    mock_collection.delete_one.assert_called_once_with({'UUID': uuid})
