@@ -18,7 +18,7 @@ def generate_random_document() -> dict:
         dict: A dictionary representing the MongoDB document with a 'UUID', 'name', 'age', and 'email' fields.
     """
     document = {
-        'UUID': str(uuid.uuid4()),  # Generate a version 4 UUID as a string
+        'UUID': str(uuid.uuid4()),  # Generate UUID as a string
         'name': 'Bryson Ruff',
         'age': 20,
         'email': 'bfirst86@gmail.com'
@@ -33,4 +33,13 @@ def save_document(document: dict) -> str:
         str: The UUID 
     """
     result = collection.insert_one(document)
-    return document['UUID']  # Return the UUID of the saved document
+    return document['UUID']  # Return the UUID the document saved
+
+def find_document_by_uuid(uuid: str) -> dict:
+    """Find a document by its UUID.
+    Args:
+        uuid: The UUID to find
+    Returns:
+        dict: the document found
+    """
+    return collection.find_one({'UUID': uuid}) 
